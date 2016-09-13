@@ -75,21 +75,25 @@ class Jira(BotPlugin):
         try:
             issue = jira.issue(ticket)
 
-            response = '{0} created on {1} by {2} ({4}) - {3}'.format(
-                issue.fields.summary,
-                issue.fields.created,
-                issue.fields.reporter.displayName,
-                issue.permalink(),
-                issue.fields.status.name
+            self.send_card(
+                in_reply_to=msg,
+                body=issue.fields.summary,
+                title=issue.fields.summary,
+                link=issue.permalink(),
+                body=issue.fields.description,
+                fields=(
+                    ('Created', issue.fields.created),
+                    ('Updated', issue.fields.updated),
+                    ('Assignee', issue.fields.assignee.displayName),
+                    ('Status', issue.fields.status.name),
+                ),
             )
         except JIRAError:
-            response = 'Ticket {0} not found.'.format(ticket)
-
-        self.send(msg.frm,
-                  response,
-                  message_type=msg.type,
-                  in_reply_to=msg,
-                  groupchat_nick_reply=True)
+            self.send_card(
+                in_reply_to=msg,
+                body='Ticket {0} not found.'.format(ticket),
+                color='red',
+            )
 
     @botcmd(split_args_with=' ')
     def jira_comment(self, msg, args):
