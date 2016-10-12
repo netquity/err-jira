@@ -77,7 +77,6 @@ class Jira(BotPlugin):
 
             self.send_card(
                 in_reply_to=msg,
-                body=issue.fields.summary,
                 title=issue.fields.summary,
                 link=issue.permalink(),
                 body=issue.fields.description,
